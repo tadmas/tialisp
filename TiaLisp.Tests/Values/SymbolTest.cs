@@ -1,8 +1,8 @@
-﻿using TiaLisp.Forms;
+﻿using TiaLisp.Values;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
-namespace TiaLisp.Tests.Forms
+namespace TiaLisp.Tests.Values
 {
     [TestClass]
     public class SymbolTest

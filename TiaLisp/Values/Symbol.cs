@@ -1,14 +1,14 @@
 ﻿using System;
 
-namespace TiaLisp.Forms
+namespace TiaLisp.Values
 {
-    public struct Symbol : IEquatable<Symbol>
+    public sealed class Symbol : ILispValue, IEquatable<Symbol>
     {
         private readonly string _Name;
 
         public Symbol(string name)
         {
-            if (string.IsNullOrEmpty(name))
+            if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException();
 
             this._Name = name;
@@ -19,29 +19,42 @@ namespace TiaLisp.Forms
             get { return _Name; }
         }
 
+        public LispValueType Type
+        {
+            get { return LispValueType.Symbol; }
+        }
+
         public bool Equals(Symbol other)
         {
+            if (other == null)
+                return false;
             return string.Equals(this.Name, other.Name);
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null)
-                return false;
-            else if (obj is Symbol)
+            if (obj is Symbol)
                 return Equals((Symbol)obj);
+            else
+                return false;
+        }
+
+        bool IEquatable<ILispValue>.Equals(ILispValue other)
+        {
+            if (other is Symbol)
+                return Equals((Symbol)other);
             else
                 return false;
         }
 
         public override int GetHashCode()
         {
-            return (this.Name ?? string.Empty).GetHashCode();
+            return this.Name.GetHashCode();
         }
 
         public override string ToString()
         {
-            return (this.Name ?? string.Empty);
+            return this.Name;
         }
     }
 }

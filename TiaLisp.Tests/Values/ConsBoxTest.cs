@@ -1,9 +1,9 @@
-﻿using TiaLisp.Forms;
+﻿using TiaLisp.Values;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 
-namespace TiaLisp.Tests.Forms
+namespace TiaLisp.Tests.Values
 {
     [TestClass]
     public class ConsBoxTest
@@ -13,7 +13,7 @@ namespace TiaLisp.Tests.Forms
         [TestMethod]
         public void ProperListToString()
         {
-            ILispForm properList = LispForms.List(LispForms.Symbol("test"), LispForms.Constant(1), LispForms.Constant("foo"), LispForms.List(LispForms.Constant(1), LispForms.Constant(2), LispForms.Constant(3)), LispForms.Constant(true));
+            ILispValue properList = Lisp.List(Lisp.Symbol("test"), Lisp.Constant(1), Lisp.Constant("foo"), Lisp.List(Lisp.Constant(1), Lisp.Constant(2), Lisp.Constant(3)), Lisp.Constant(true));
             Assert.IsInstanceOfType(properList, typeof(ConsBox));
             Assert.AreEqual("(test 1 \"foo\" (1 2 3) #t)", properList.ToString());
         }
@@ -21,7 +21,7 @@ namespace TiaLisp.Tests.Forms
         [TestMethod]
         public void ImproperListToString()
         {
-            ConsBox improperList = new ConsBox { Head = LispForms.Symbol("test"), Tail = LispForms.Constant(1) };
+            ConsBox improperList = new ConsBox { Head = Lisp.Symbol("test"), Tail = Lisp.Constant(1) };
             Assert.AreEqual("(test . 1)", improperList.ToString());
         }
 
@@ -30,17 +30,17 @@ namespace TiaLisp.Tests.Forms
         {
             ConsBox improperList = new ConsBox
             {
-                Head = LispForms.Symbol("test"),
+                Head = Lisp.Symbol("test"),
                 Tail = new ConsBox
                 {
-                    Head = LispForms.Constant(1),
+                    Head = Lisp.Constant(1),
                     Tail = new ConsBox
                     {
-                        Head = LispForms.Constant("foo"),
+                        Head = Lisp.Constant("foo"),
                         Tail = new ConsBox
                         {
-                            Head = LispForms.List(LispForms.Constant(1), LispForms.Constant(2), LispForms.Constant(3)),
-                            Tail = LispForms.Constant(true)
+                            Head = Lisp.List(Lisp.Constant(1), Lisp.Constant(2), Lisp.Constant(3)),
+                            Tail = Lisp.Constant(true)
                         }
                     }
                 }
@@ -52,40 +52,40 @@ namespace TiaLisp.Tests.Forms
         [TestMethod]
         public void ProperListConstruction()
         {
-            ILispForm helperConstructedList = LispForms.List(
-                LispForms.Symbol("test"),
-                LispForms.Constant(1),
-                LispForms.Constant("foo"),
-                LispForms.List(LispForms.Constant(1), LispForms.Constant(2), LispForms.Constant(3)),
-                LispForms.Constant(true));
+            ILispValue helperConstructedList = Lisp.List(
+                Lisp.Symbol("test"),
+                Lisp.Constant(1),
+                Lisp.Constant("foo"),
+                Lisp.List(Lisp.Constant(1), Lisp.Constant(2), Lisp.Constant(3)),
+                Lisp.Constant(true));
 
-            ILispForm manuallyConstructedList = new ConsBox
+            ILispValue manuallyConstructedList = new ConsBox
             {
-                Head = LispForms.Symbol("test"),
+                Head = Lisp.Symbol("test"),
                 Tail = new ConsBox
                 {
-                    Head = LispForms.Constant(1),
+                    Head = Lisp.Constant(1),
                     Tail = new ConsBox
                     {
-                        Head = LispForms.Constant("foo"),
+                        Head = Lisp.Constant("foo"),
                         Tail = new ConsBox
                         {
                             Head = new ConsBox
                             {
-                                Head = LispForms.Constant(1),
+                                Head = Lisp.Constant(1),
                                 Tail = new ConsBox
                                 {
-                                    Head = LispForms.Constant(2),
+                                    Head = Lisp.Constant(2),
                                     Tail = new ConsBox
                                     {
-                                        Head = LispForms.Constant(3),
+                                        Head = Lisp.Constant(3),
                                         Tail = Nil.Instance
                                     }
                                 }
                             },
                             Tail = new ConsBox
                             {
-                                Head = LispForms.Constant(true),
+                                Head = Lisp.Constant(true),
                                 Tail = Nil.Instance
                             }
                         }
@@ -94,7 +94,7 @@ namespace TiaLisp.Tests.Forms
             };
 
             // Do not use Assert.AreEqual here since it doesn't use IEquatable.
-            Assert.IsTrue(EqualityComparer<ILispForm>.Default.Equals(manuallyConstructedList, helperConstructedList));
+            Assert.IsTrue(EqualityComparer<ILispValue>.Default.Equals(manuallyConstructedList, helperConstructedList));
         }
     }
 }
