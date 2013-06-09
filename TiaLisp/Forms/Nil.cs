@@ -14,5 +14,18 @@ namespace TiaLisp.Forms
         {
             get { return FormType.Nil; }
         }
+
+        bool IEquatable<ILispForm>.Equals(ILispForm other)
+        {
+            if (other == null)
+                return false;
+            else
+                return other is Nil;
+        }
+
+        public override string ToString()
+        {
+            return "()";
+        }
     }
 }

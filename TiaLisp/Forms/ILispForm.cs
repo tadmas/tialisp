@@ -2,7 +2,7 @@
 
 namespace TiaLisp.Forms
 {
-    public interface ILispForm
+    public interface ILispForm : IEquatable<ILispForm>
     {
         FormType Type { get; }
     }

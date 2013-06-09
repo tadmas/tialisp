@@ -4,7 +4,7 @@ namespace TiaLisp.Forms
 {
     public static class LispForms
     {
-        public static Constant<T> Constant<T>(T value) where T : struct
+        public static Constant<T> Constant<T>(T value) where T : struct, IEquatable<T>
         {
             return new Constant<T> { Value = value };
         }

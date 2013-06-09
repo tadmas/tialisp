@@ -38,5 +38,10 @@ namespace TiaLisp.Forms
         {
             return (this.Name ?? string.Empty).GetHashCode();
         }
+
+        public override string ToString()
+        {
+            return (this.Name ?? string.Empty);
+        }
     }
 }
