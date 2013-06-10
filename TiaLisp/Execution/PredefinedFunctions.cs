@@ -81,7 +81,7 @@ namespace TiaLisp.Execution
             Parameters = new List<LambdaParameter>() { new LambdaParameter("list", LispValueType.List) },
             Body = parameters =>
                 {
-                    Dictionary<string, ILispValue> boundParams = BindParameters(Car, parameters);
+                    Dictionary<string, ILispValue> boundParams = BindParameters(Cdr, parameters);
                      if (((List)boundParams["list"]).IsEmpty)
                         throw new LispException("cannot take the CDR of an empty list");
                     return ((ConsBox)boundParams["list"]).Tail;
