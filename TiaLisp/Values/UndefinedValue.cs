@@ -13,5 +13,10 @@ namespace TiaLisp.Values
         {
             return false;
         }
+
+        public override string ToString()
+        {
+            return "#<undefined>";
+        }
     }
 }

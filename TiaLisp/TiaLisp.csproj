@@ -41,6 +41,9 @@
     <Compile Include="Environment\ILispEnvironment.cs" />
     <Compile Include="Environment\LocalEnvironment.cs" />
     <Compile Include="Environment\SymbolNotBoundException.cs" />
+    <Compile Include="Execution\PredefinedFunctions.cs" />
+    <Compile Include="Execution\SignatureMismatchException.cs" />
+    <Compile Include="Execution\TypeMismatchException.cs" />
     <Compile Include="Lisp.cs" />
     <Compile Include="LispException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -53,6 +56,7 @@
     <Compile Include="Values\SimpleValue.cs" />
     <Compile Include="Values\String.cs" />
     <Compile Include="Values\Symbol.cs" />
+    <Compile Include="Values\UndefinedValue.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
