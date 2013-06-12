@@ -30,7 +30,7 @@ namespace TiaLisp.Execution
             }
         }
 
-        public static ILispValue EvaluateConsBox(ConsBox cons, ILispEnvironment environment)
+        private static ILispValue EvaluateConsBox(ConsBox cons, ILispEnvironment environment)
         {
             ILispValue head = cons.Head;
             IList<ILispValue> parameters = cons.CollectProperList().Skip(1).ToList();
@@ -63,7 +63,7 @@ namespace TiaLisp.Execution
             }
         }
 
-        public static ILispValue EvaluateInvocation(Symbol funcName, IList<ILispValue> args, ILispEnvironment environment)
+        private static ILispValue EvaluateInvocation(Symbol funcName, IList<ILispValue> args, ILispEnvironment environment)
         {
             ILispValue func = environment.Lookup(funcName);
             if (func.Type != LispValueType.Lambda)
@@ -75,7 +75,7 @@ namespace TiaLisp.Execution
             return lambda.Execute(BindParameters(lambda, parameterValues));
         }
 
-        public static ILispValue EvaluateQuote(IList<ILispValue> args, ILispEnvironment environment)
+        private static ILispValue EvaluateQuote(IList<ILispValue> args, ILispEnvironment environment)
         {
             if (args.Count == 0)
                 throw new SignatureMismatchException("missing argument to 'quote'");
@@ -84,7 +84,7 @@ namespace TiaLisp.Execution
             return args[0];
         }
 
-        public static ILispValue EvaluateIf(IList<ILispValue> args, ILispEnvironment environment)
+        private static ILispValue EvaluateIf(IList<ILispValue> args, ILispEnvironment environment)
         {
             if (args.Count < 3)
                 throw new SignatureMismatchException("too few arguments supplied");
@@ -109,7 +109,7 @@ namespace TiaLisp.Execution
             }
         }
 
-        public static ILispValue EvaluateProgn(IList<ILispValue> args, ILispEnvironment environment)
+        private static ILispValue EvaluateProgn(IList<ILispValue> args, ILispEnvironment environment)
         {
             ILispValue result = Nil.Instance;
             foreach (ILispValue arg in args)
@@ -119,7 +119,7 @@ namespace TiaLisp.Execution
             return result;
         }
 
-        public static ILispValue EvaluateSet(IList<ILispValue> args, ILispEnvironment environment)
+        private static ILispValue EvaluateSet(IList<ILispValue> args, ILispEnvironment environment)
         {
             if (args.Count < 2)
                 throw new SignatureMismatchException("too few arguments supplied");
@@ -133,7 +133,7 @@ namespace TiaLisp.Execution
             return value;
         }
 
-        public static ILispValue EvaluateLambdaDefinition(IList<ILispValue> args, ILispEnvironment environment)
+        private static ILispValue EvaluateLambdaDefinition(IList<ILispValue> args, ILispEnvironment environment)
         {
             throw new NotImplementedException();
         }
