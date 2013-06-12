@@ -44,7 +44,7 @@ namespace TiaLisp.Execution
                         return EvaluateQuote(parameters, environment);
                     case "if":
                         return EvaluateIf(parameters, environment);
-                    case "begin":
+                    case "progn":
                         return EvaluateProgn(parameters, environment);
                     case "set!":
                         return EvaluateSet(parameters, environment);
