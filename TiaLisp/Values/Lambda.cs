@@ -9,6 +9,7 @@ namespace TiaLisp.Values
         IList<LambdaParameter> Parameters { get; }
         ILispEnvironment Environment { get; }
         bool IsNative { get; }
+        ILispValue Execute(Dictionary<string, ILispValue> parameters);
     }
 
     public sealed class Lambda : ILispValue, ILispLambda
@@ -43,6 +44,11 @@ namespace TiaLisp.Values
             // TODO: implement
             return object.ReferenceEquals(this, other);
         }
+
+        public ILispValue Execute(Dictionary<string, ILispValue> parameters)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public sealed class NativeLambda : ILispValue, ILispLambda
@@ -63,7 +69,7 @@ namespace TiaLisp.Values
             }
         }
 
-        public Func<IList<ILispValue>, ILispValue> Body { get; internal set; }
+        public Func<Dictionary<string, ILispValue>, ILispValue> Body { get; internal set; }
         public ILispEnvironment Environment { get; internal set; }
 
         public LispValueType Type
@@ -79,6 +85,11 @@ namespace TiaLisp.Values
         bool IEquatable<ILispValue>.Equals(ILispValue other)
         {
             return object.ReferenceEquals(this, other);
+        }
+
+        public ILispValue Execute(Dictionary<string, ILispValue> parameters)
+        {
+            return Body(parameters);
         }
     }
 

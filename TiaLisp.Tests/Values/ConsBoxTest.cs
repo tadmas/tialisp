@@ -94,7 +94,7 @@ namespace TiaLisp.Tests.Values
             };
 
             // Do not use Assert.AreEqual here since it doesn't use IEquatable.
-            Assert.IsTrue(EqualityComparer<ILispValue>.Default.Equals(manuallyConstructedList, helperConstructedList));
+            LispAssert.AreEqual(manuallyConstructedList, helperConstructedList);
         }
     }
 }

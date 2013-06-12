@@ -62,5 +62,10 @@ namespace TiaLisp
         {
             get { return Nil.Instance; }
         }
+
+        public static List Quote(ILispValue value)
+        {
+            return Lisp.List(Lisp.Symbol("quote"), value);
+        }
     }
 }

@@ -37,6 +37,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Execution\Evaluator.cs" />
     <Compile Include="Environment\GlobalEnvironment.cs" />
     <Compile Include="Environment\ILispEnvironment.cs" />
     <Compile Include="Environment\LocalEnvironment.cs" />

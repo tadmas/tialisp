@@ -7,8 +7,6 @@ namespace TiaLisp.Execution
 {
     internal static class PredefinedFunctions
     {
-        #region GetSymbols
-
         public static Dictionary<Symbol, ILispValue> GetSymbols()
         {
             Dictionary<Symbol, ILispValue> dict = new Dictionary<Symbol, ILispValue>();
@@ -20,80 +18,6 @@ namespace TiaLisp.Execution
 
             return dict;
         }
-
-        #endregion
-
-        #region Helper methods
-
-        private static Dictionary<string, ILispValue> BindParameters(NativeLambda lambda, IList<ILispValue> parameters)
-        {
-            Dictionary<string, ILispValue> bindings = new Dictionary<string, ILispValue>();
-
-            Queue<ILispValue> actualParameters = new Queue<ILispValue>(parameters);
-            foreach (LambdaParameter definedParameter in lambda.Parameters)
-            {
-                switch (definedParameter.ParameterType)
-                {
-                    case LambdaParameterType.Normal:
-                        {
-                            if (actualParameters.Count == 0)
-                                throw new SignatureMismatchException("missing required argument: " + definedParameter.Name);
-                            ILispValue value = actualParameters.Dequeue();
-                            if (definedParameter.ValueType != LispValueType.Unknown && definedParameter.ValueType != value.Type)
-                                throw new TypeMismatchException(definedParameter.Name, definedParameter.ValueType, value.Type);
-                            bindings[definedParameter.Name.Name] = value;
-                        }
-                        break;
-                    case LambdaParameterType.Optional:
-                        {
-                            if (actualParameters.Count > 0)
-                            {
-                                goto case LambdaParameterType.Normal;
-                            }
-                            switch (definedParameter.ValueType)
-                            {
-                                case LispValueType.Unknown:
-                                case LispValueType.List:
-                                    bindings[definedParameter.Name.Name] = Nil.Instance;
-                                    break;
-                                case LispValueType.Boolean:
-                                    bindings[definedParameter.Name.Name] = new TiaLisp.Values.Boolean(false);
-                                    break;
-                                case LispValueType.String:
-                                    bindings[definedParameter.Name.Name] = new TiaLisp.Values.String(string.Empty);
-                                    break;
-                                case LispValueType.Number:
-                                    bindings[definedParameter.Name.Name] = new Integer(0);
-                                    break;
-                                case LispValueType.Char:
-                                    bindings[definedParameter.Name.Name] = new Character(default(char));
-                                    break;
-                                default:
-                                    throw new LispException("do not know how to construct a default value for type " + definedParameter.ValueType);
-                            }
-                        }
-                        break;
-                    case LambdaParameterType.Rest:
-                        {
-                            foreach (ILispValue actualParameter in actualParameters)
-                            {
-                                if (definedParameter.ValueType != LispValueType.Unknown && definedParameter.ValueType != actualParameter.Type)
-                                    throw new TypeMismatchException(definedParameter.Name, definedParameter.ValueType, actualParameter.Type);
-                            }
-                            bindings[definedParameter.Name.Name] = Lisp.List(actualParameters.ToArray());
-                            actualParameters.Clear();
-                        }
-                        break;
-                }
-            }
-
-            if (actualParameters.Count > 0)
-                throw new SignatureMismatchException("too many arguments supplied");
-
-            return bindings;
-        }
-
-        #endregion
 
         #region Predicates
 
@@ -111,71 +35,43 @@ namespace TiaLisp.Execution
         public static NativeLambda BooleanP = new NativeLambda
         {
             Parameters = new List<LambdaParameter>() { new LambdaParameter("arg") },
-            Body = parameters =>
-                {
-                    Dictionary<string, ILispValue> boundParams = BindParameters(BooleanP, parameters);
-                    return new TiaLisp.Values.Boolean(boundParams["arg"].Type == LispValueType.Boolean);
-                }
+            Body = parameters => new TiaLisp.Values.Boolean(parameters["arg"].Type == LispValueType.Boolean)
         };
 
         public static NativeLambda CharP = new NativeLambda
         {
             Parameters = new List<LambdaParameter>() { new LambdaParameter("arg") },
-            Body = parameters =>
-                {
-                    Dictionary<string, ILispValue> boundParams = BindParameters(CharP, parameters);
-                    return new TiaLisp.Values.Boolean(boundParams["arg"].Type == LispValueType.Char);
-                }
+            Body = parameters => new TiaLisp.Values.Boolean(parameters["arg"].Type == LispValueType.Char)
         };
 
         public static NativeLambda LambdaP = new NativeLambda
         {
             Parameters = new List<LambdaParameter>() { new LambdaParameter("arg") },
-            Body = parameters =>
-                {
-                    Dictionary<string, ILispValue> boundParams = BindParameters(LambdaP, parameters);
-                    return new TiaLisp.Values.Boolean(boundParams["arg"].Type == LispValueType.Lambda);
-                }
+            Body = parameters => new TiaLisp.Values.Boolean(parameters["arg"].Type == LispValueType.Lambda)
         };
 
         public static NativeLambda ListP = new NativeLambda
         {
             Parameters = new List<LambdaParameter>() { new LambdaParameter("arg") },
-            Body = parameters =>
-                {
-                    Dictionary<string, ILispValue> boundParams = BindParameters(ListP, parameters);
-                    return new TiaLisp.Values.Boolean(boundParams["arg"].Type == LispValueType.List);
-                }
+            Body = parameters => new TiaLisp.Values.Boolean(parameters["arg"].Type == LispValueType.List)
         };
 
         public static NativeLambda NumberP = new NativeLambda
         {
             Parameters = new List<LambdaParameter>() { new LambdaParameter("arg") },
-            Body = parameters =>
-                {
-                    Dictionary<string, ILispValue> boundParams = BindParameters(NumberP, parameters);
-                    return new TiaLisp.Values.Boolean(boundParams["arg"].Type == LispValueType.Number);
-                }
+            Body = parameters => new TiaLisp.Values.Boolean(parameters["arg"].Type == LispValueType.Number)
         };
 
         public static NativeLambda StringP = new NativeLambda
         {
             Parameters = new List<LambdaParameter>() { new LambdaParameter("arg") },
-            Body = parameters =>
-                {
-                    Dictionary<string, ILispValue> boundParams = BindParameters(StringP, parameters);
-                    return new TiaLisp.Values.Boolean(boundParams["arg"].Type == LispValueType.String);
-                }
+            Body = parameters => new TiaLisp.Values.Boolean(parameters["arg"].Type == LispValueType.String)
         };
 
         public static NativeLambda SymbolP = new NativeLambda
         {
             Parameters = new List<LambdaParameter>() { new LambdaParameter("arg") },
-            Body = parameters =>
-                {
-                    Dictionary<string, ILispValue> boundParams = BindParameters(SymbolP, parameters);
-                    return new TiaLisp.Values.Boolean(boundParams["arg"].Type == LispValueType.Symbol);
-                }
+            Body = parameters => new TiaLisp.Values.Boolean(parameters["arg"].Type == LispValueType.Symbol)
         };
 
         #endregion
@@ -199,10 +95,9 @@ namespace TiaLisp.Execution
             Parameters = new List<LambdaParameter>() { new LambdaParameter("list", LispValueType.List) },
             Body = parameters =>
                 {
-                    Dictionary<string, ILispValue> boundParams = BindParameters(Car, parameters);
-                    if (((List)boundParams["list"]).IsEmpty)
+                    if (((List)parameters["list"]).IsEmpty)
                         throw new LispException("cannot take the CAR of an empty list");
-                    return ((ConsBox)boundParams["list"]).Head;
+                    return ((ConsBox)parameters["list"]).Head;
                 }
         };
 
@@ -211,31 +106,22 @@ namespace TiaLisp.Execution
             Parameters = new List<LambdaParameter>() { new LambdaParameter("list", LispValueType.List) },
             Body = parameters =>
                 {
-                    Dictionary<string, ILispValue> boundParams = BindParameters(Cdr, parameters);
-                    if (((List)boundParams["list"]).IsEmpty)
+                    if (((List)parameters["list"]).IsEmpty)
                         throw new LispException("cannot take the CDR of an empty list");
-                    return ((ConsBox)boundParams["list"]).Tail;
+                    return ((ConsBox)parameters["list"]).Tail;
                 }
         };
 
         public static NativeLambda Cons = new NativeLambda
         {
             Parameters = new List<LambdaParameter>() { new LambdaParameter("head"), new LambdaParameter("tail") },
-            Body = parameters =>
-                {
-                    Dictionary<string, ILispValue> boundParams = BindParameters(Cons, parameters);
-                    return new ConsBox { Head = boundParams["head"], Tail = boundParams["tail"] };
-                }
+            Body = parameters => new ConsBox { Head = parameters["head"], Tail = parameters["tail"] }
         };
 
         public static NativeLambda List = new NativeLambda
         {
             Parameters = new List<LambdaParameter>() { new LambdaParameter("args", LispValueType.Unknown, LambdaParameterType.Rest) },
-            Body = parameters =>
-                {
-                    Dictionary<string, ILispValue> boundParams = BindParameters(Cons, parameters);
-                    return boundParams["args"];
-                }
+            Body = parameters => parameters["args"]
         };
 
         public static NativeLambda Reverse = new NativeLambda
@@ -243,8 +129,7 @@ namespace TiaLisp.Execution
             Parameters = new List<LambdaParameter>() { new LambdaParameter("list", LispValueType.List) },
             Body = parameters =>
                 {
-                    Dictionary<string, ILispValue> boundParams = BindParameters(Reverse, parameters);
-                    IList<ILispValue> items = ((List)boundParams["list"]).CollectProperList();
+                    IList<ILispValue> items = ((List)parameters["list"]).CollectProperList();
                     return Lisp.List(items.Reverse().ToArray());
                 }
         };
@@ -252,11 +137,7 @@ namespace TiaLisp.Execution
         public static NativeLambda Length = new NativeLambda
         {
             Parameters = new List<LambdaParameter>() { new LambdaParameter("list", LispValueType.List) },
-            Body = parameters =>
-                {
-                    Dictionary<string, ILispValue> boundParams = BindParameters(Length, parameters);
-                    return new Integer(((List)boundParams["list"]).CollectProperList().Count);
-                }
+            Body = parameters => new Integer(((List)parameters["list"]).CollectProperList().Count)
         };
 
         #endregion
@@ -278,8 +159,7 @@ namespace TiaLisp.Execution
             Parameters = new List<LambdaParameter>() { new LambdaParameter("chars", LispValueType.Char, LambdaParameterType.Rest) },
             Body = parameters =>
                 {
-                    Dictionary<string, ILispValue> boundParams = BindParameters(String, parameters);
-                    string s = new string(((List)boundParams["chars"]).CollectProperList().Cast<Character>().Select(c => c.Value).ToArray());
+                    string s = new string(((List)parameters["chars"]).CollectProperList().Cast<Character>().Select(c => c.Value).ToArray());
                     return new TiaLisp.Values.String(s);
                 }
         };
@@ -289,8 +169,7 @@ namespace TiaLisp.Execution
             Parameters = new List<LambdaParameter>() { new LambdaParameter("chars", LispValueType.List) },
             Body = parameters =>
                 {
-                    Dictionary<string, ILispValue> boundParams = BindParameters(ListToString, parameters);
-                    IList<ILispValue> chars = ((List)boundParams["chars"]).CollectProperList();
+                    IList<ILispValue> chars = ((List)parameters["chars"]).CollectProperList();
                     foreach (ILispValue c in chars)
                     {
                         if (c.Type != LispValueType.Char)
@@ -306,8 +185,7 @@ namespace TiaLisp.Execution
             Parameters = new List<LambdaParameter>() { new LambdaParameter("string", LispValueType.String) },
             Body = parameters =>
                 {
-                    Dictionary<string, ILispValue> boundParams = BindParameters(StringToList, parameters);
-                    string s = ((TiaLisp.Values.String)boundParams["string"]).Value;
+                    string s = ((TiaLisp.Values.String)parameters["string"]).Value;
                     return Lisp.List(s.Select(c => new Character(c)).ToArray());
                 }
         };
@@ -317,15 +195,14 @@ namespace TiaLisp.Execution
             Parameters = new List<LambdaParameter>() { new LambdaParameter("length", LispValueType.Number), new LambdaParameter("char", LispValueType.Char, LambdaParameterType.Optional) },
             Body = parameters =>
                 {
-                    Dictionary<string, ILispValue> boundParams = BindParameters(MakeString, parameters);
-                    if (!(boundParams["length"] is Integer))
+                    if (!(parameters["length"] is Integer))
                     {
                         throw new LispException("length must be an integer");
                     }
-                    long length = ((Integer)boundParams["length"]).Value;
+                    long length = ((Integer)parameters["length"]).Value;
                     if (length < 0 || length > Int32.MaxValue)
                         throw new LispException("invalid string length: " + length.ToString());
-                    char c = ((Character)boundParams["char"]).Value;
+                    char c = ((Character)parameters["char"]).Value;
                     return new TiaLisp.Values.String(new string(c, (int)length));
                 }
         };
@@ -335,8 +212,7 @@ namespace TiaLisp.Execution
             Parameters = new List<LambdaParameter>() { new LambdaParameter("string", LispValueType.String) },
             Body = parameters =>
                 {
-                    Dictionary<string, ILispValue> boundParams = BindParameters(StringLength, parameters);
-                    string s = ((TiaLisp.Values.String)boundParams["string"]).Value;
+                    string s = ((TiaLisp.Values.String)parameters["string"]).Value;
                     return new TiaLisp.Values.Integer(s.Length);
                 }
         };
@@ -346,15 +222,14 @@ namespace TiaLisp.Execution
             Parameters = new List<LambdaParameter>() { new LambdaParameter("string", LispValueType.String), new LambdaParameter("index", LispValueType.Number) },
             Body = parameters =>
                 {
-                    Dictionary<string, ILispValue> boundParams = BindParameters(StringRef, parameters);
-                    string s = ((TiaLisp.Values.String)boundParams["string"]).Value;
-                    if (!(boundParams["index"] is Integer))
+                    string s = ((TiaLisp.Values.String)parameters["string"]).Value;
+                    if (!(parameters["index"] is Integer))
                     {
                         throw new LispException("index must be an integer");
                     }
-                    long index = ((Integer)boundParams["index"]).Value;
+                    long index = ((Integer)parameters["index"]).Value;
                     if (index < 0 || index >= s.Length)
-                        throw new LispException("invalid index " + index.ToString() + " to string: " + boundParams["string"].ToString());
+                        throw new LispException("invalid index " + index.ToString() + " to string: " + parameters["string"].ToString());
                     return new Character(s[(int)index]);
                 }
         };
@@ -373,9 +248,8 @@ namespace TiaLisp.Execution
             Parameters = new List<LambdaParameter>() { new LambdaParameter("text", LispValueType.String, LambdaParameterType.Optional) },
             Body = parameters =>
                 {
-                    Dictionary<string, ILispValue> boundParams = BindParameters(Car, parameters);
-                    Console.WriteLine(((TiaLisp.Values.String)boundParams["text"]).Value);
-                    return boundParams["text"];
+                    Console.WriteLine(((TiaLisp.Values.String)parameters["text"]).Value);
+                    return parameters["text"];
                 }
         };
 
