@@ -22,18 +22,17 @@ namespace TiaLisp.Execution
                 case LispValueType.Symbol:
                     return environment.Lookup((Symbol)value);
                 case LispValueType.List:
-                    List list = (List)value;
-                    if (list.IsEmpty)
-                        return value;
-                    else
-                        return EvaluateConsBox((ConsBox)value, environment);
+                    return EvaluateList((List)value, environment);
             }
         }
 
-        private static ILispValue EvaluateConsBox(ConsBox cons, ILispEnvironment environment)
+        private static ILispValue EvaluateList(List list, ILispEnvironment environment)
         {
-            ILispValue head = cons.Head;
-            IList<ILispValue> parameters = cons.CollectProperList().Skip(1).ToList();
+            if (list.IsEmpty)
+                return list;
+
+            ILispValue head = list.GetHead();
+            IList<ILispValue> parameters = list.CollectProperList().Skip(1).ToList();
 
             if (head.Type == LispValueType.Symbol)
             {
@@ -58,7 +57,7 @@ namespace TiaLisp.Execution
             {
                 head = Evaluate(head, environment);
                 if (head.Type != LispValueType.Symbol)
-                    throw new TypeMismatchException(new Symbol("function"), LispValueType.Symbol, cons.Head.Type);
+                    throw new TypeMismatchException(new Symbol("function"), LispValueType.Symbol, head.Type);
                 return EvaluateInvocation((Symbol)head, parameters, environment);
             }
         }

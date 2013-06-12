@@ -93,23 +93,13 @@ namespace TiaLisp.Execution
         public static NativeLambda Car = new NativeLambda
         {
             Parameters = new List<LambdaParameter>() { new LambdaParameter("list", LispValueType.List) },
-            Body = parameters =>
-                {
-                    if (((List)parameters["list"]).IsEmpty)
-                        throw new LispException("cannot take the CAR of an empty list");
-                    return ((ConsBox)parameters["list"]).Head;
-                }
+            Body = parameters => ((List)parameters["list"]).GetHead()
         };
 
         public static NativeLambda Cdr = new NativeLambda
         {
             Parameters = new List<LambdaParameter>() { new LambdaParameter("list", LispValueType.List) },
-            Body = parameters =>
-                {
-                    if (((List)parameters["list"]).IsEmpty)
-                        throw new LispException("cannot take the CDR of an empty list");
-                    return ((ConsBox)parameters["list"]).Tail;
-                }
+            Body = parameters => ((List)parameters["list"]).GetTail()
         };
 
         public static NativeLambda Cons = new NativeLambda

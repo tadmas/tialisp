@@ -13,6 +13,8 @@ namespace TiaLisp.Values
         }
 
         public abstract bool IsEmpty { get; }
+        public abstract ILispValue GetHead();
+        public abstract ILispValue GetTail();
         public abstract IList<ILispValue> CollectProperList();
 
         bool IEquatable<ILispValue>.Equals(ILispValue other)
@@ -46,6 +48,16 @@ namespace TiaLisp.Values
             get { return true; }
         }
 
+        public override ILispValue GetHead()
+        {
+            throw new LispException("cannot take the CAR of an empty list");
+        }
+
+        public override ILispValue GetTail()
+        {
+            throw new LispException("cannot take the CDR of an empty list");
+        }
+
         public override IList<ILispValue> CollectProperList()
         {
             return new ILispValue[0];
@@ -65,6 +77,16 @@ namespace TiaLisp.Values
         public override bool IsEmpty
         {
             get { return false; }
+        }
+
+        public override ILispValue GetHead()
+        {
+            return this.Head;
+        }
+
+        public override ILispValue GetTail()
+        {
+            return this.Tail;
         }
 
         public override IList<ILispValue> CollectProperList()
