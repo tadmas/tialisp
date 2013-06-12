@@ -50,6 +50,7 @@
     <Compile Include="Execution\PredefinedListFunctions.cs" />
     <Compile Include="Execution\PredefinedPredicates.cs" />
     <Compile Include="Execution\PredefinedStringFunctions.cs" />
+    <Compile Include="Execution\SpecialForms.cs" />
     <Compile Include="LispAssert.cs" />
     <Compile Include="Values\ConsBoxTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
