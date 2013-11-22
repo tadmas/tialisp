@@ -45,7 +45,7 @@ namespace TiaLisp.Tests.Execution
             LispAssert.EvaluatesTo(Lisp.Constant("xxxxxxxxxx"),
                 Lisp.List(Lisp.Symbol("make-string"), Lisp.Constant(10), Lisp.Constant('x')));
             LispAssert.ThrowsWhenEvaluated(
-                Lisp.List(Lisp.Symbol("make-string"), Lisp.Constant(9.3), Lisp.Constant('x')));
+                Lisp.List(Lisp.Symbol("make-string"), Lisp.Constant(9.3m), Lisp.Constant('x')));
             LispAssert.EvaluatesTo(Lisp.Constant(8),
                 Lisp.List(Lisp.Symbol("string-length"), Lisp.List(Lisp.Symbol("make-string"), Lisp.Constant(8))));
         }
@@ -71,7 +71,7 @@ namespace TiaLisp.Tests.Execution
             LispAssert.ThrowsWhenEvaluated(
                 Lisp.List(Lisp.Symbol("string-ref"), Lisp.Constant("test"), Lisp.Constant(4)));
             LispAssert.ThrowsWhenEvaluated(
-                Lisp.List(Lisp.Symbol("string-ref"), Lisp.Constant("test"), Lisp.Constant(2.2)));
+                Lisp.List(Lisp.Symbol("string-ref"), Lisp.Constant("test"), Lisp.Constant(2.2m)));
         }
     }
 }

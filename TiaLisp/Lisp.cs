@@ -8,19 +8,14 @@ namespace TiaLisp
 {
     public static class Lisp
     {
-        public static Integer Constant(long value)
+        public static Number Constant(long value)
         {
-            return new Integer(value);
+            return new Number(value);
         }
 
-        public static FloatingPointNumber Constant(double value)
+        public static Number Constant(decimal value)
         {
-            return new FloatingPointNumber(value);
-        }
-
-        public static FixedPointNumber Constant(decimal value)
-        {
-            return new FixedPointNumber(value);
+            return new Number(value);
         }
 
         public static TiaLisp.Values.Boolean Constant(bool value)

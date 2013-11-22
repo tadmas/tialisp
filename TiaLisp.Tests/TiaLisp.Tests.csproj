@@ -47,6 +47,7 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Execution\PredefinedArithmeticFunctions.cs" />
     <Compile Include="Execution\PredefinedListFunctions.cs" />
     <Compile Include="Execution\PredefinedPredicates.cs" />
     <Compile Include="Execution\PredefinedStringFunctions.cs" />

@@ -175,7 +175,7 @@ namespace TiaLisp.Execution
                                     bindings[definedParameter.Name.Name] = new TiaLisp.Values.String(string.Empty);
                                     break;
                                 case LispValueType.Number:
-                                    bindings[definedParameter.Name.Name] = new Integer(0);
+                                    bindings[definedParameter.Name.Name] = new Number(0);
                                     break;
                                 case LispValueType.Char:
                                     bindings[definedParameter.Name.Name] = new Character(default(char));

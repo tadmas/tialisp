@@ -1,11 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace TiaLisp.Values
 {
-    public abstract class Number<T> : SimpleValue<T>, ILispValue where T : struct, IEquatable<T>
+    public sealed class Number : SimpleValue<decimal>, ILispValue
     {
-        public Number(T value) : base(value)
+        public Number(decimal value) : base(value)
+        {
+        }
+
+        public Number(long value) : base(value)
+        {
+        }
+
+        public Number(float value) : base((decimal)value)
         {
         }
 
@@ -14,60 +23,36 @@ namespace TiaLisp.Values
             get { return LispValueType.Number; }
         }
 
+        public bool IsInteger
+        {
+            get { return this.Value == Math.Truncate(this.Value); }
+        }
+
         public override string ToString()
         {
             return this.Value.ToString();
         }
-    }
 
-    public sealed class Integer : Number<long>
-    {
-        public Integer(long value) : base(value)
+        public static Number Add(Number left, Number right)
         {
+            return new Number(left.Value + right.Value);
         }
 
-        public static implicit operator FloatingPointNumber(Integer integer)
+        public static Number Subtract(Number left, Number right)
         {
-            return new FloatingPointNumber(integer.Value);
+            return new Number(left.Value - right.Value);
         }
 
-        public static implicit operator FixedPointNumber(Integer integer)
+        public static Number Multiply(Number left, Number right)
         {
-            return new FixedPointNumber(integer.Value);
-        }
-    }
-
-    public sealed class FloatingPointNumber : Number<double>
-    {
-        public FloatingPointNumber(double value) : base(value)
-        {
+            return new Number(left.Value * right.Value);
         }
 
-        public static explicit operator Integer(FloatingPointNumber number)
+        public static Number Divide(Number numerator, Number denominator)
         {
-            return new Integer((long)number.Value);
-        }
-
-        public static explicit operator FixedPointNumber(FloatingPointNumber number)
-        {
-            return new FixedPointNumber((decimal)number.Value);
-        }
-    }
-
-    public sealed class FixedPointNumber : Number<decimal>
-    {
-        public FixedPointNumber(decimal value) : base(value)
-        {
-        }
-
-        public static explicit operator Integer(FixedPointNumber number)
-        {
-            return new Integer((long)number.Value);
-        }
-
-        public static explicit operator FloatingPointNumber(FixedPointNumber number)
-        {
-            return new FloatingPointNumber((double)number.Value);
+            if (denominator.Value == 0)
+                throw new LispException("cannot divide by zero");
+            return new Number(numerator.Value / denominator.Value);
         }
     }
 }

@@ -13,6 +13,7 @@ namespace TiaLisp.Execution
 
             GetSymbols_Predicates(dict);
             GetSymbols_Lists(dict);
+            GetSymbols_Arithmetic(dict);
             GetSymbols_Strings(dict);
             GetSymbols_IO(dict);
 
@@ -127,7 +128,123 @@ namespace TiaLisp.Execution
         public static NativeLambda Length = new NativeLambda
         {
             Parameters = new List<LambdaParameter>() { new LambdaParameter("list", LispValueType.List) },
-            Body = parameters => new Integer(((List)parameters["list"]).CollectProperList().Count)
+            Body = parameters => new Number(((List)parameters["list"]).CollectProperList().Count)
+        };
+
+        #endregion
+
+        #region Arithmetic
+
+        public static void GetSymbols_Arithmetic(Dictionary<Symbol, ILispValue> dict)
+        {
+            dict.Add(new Symbol("+"), Plus);
+            dict.Add(new Symbol("-"), Minus);
+            dict.Add(new Symbol("*"), Multiply);
+            dict.Add(new Symbol("/"), Divide);
+            dict.Add(new Symbol("1+"), Increment);
+            dict.Add(new Symbol("1-"), Decrement);
+        }
+
+        public static NativeLambda Plus = new NativeLambda
+        {
+            Parameters = new List<LambdaParameter>()
+            {
+                new LambdaParameter("value", LispValueType.Number),
+                new LambdaParameter("values", LispValueType.Number, LambdaParameterType.Rest)
+            },
+            Body = parameters =>
+                {
+                    IList<ILispValue> items = ((List)parameters["values"]).CollectProperList();
+                    Number accumulator = (Number)parameters["value"];
+                    foreach (ILispValue item in items)
+                    {
+                        accumulator = Number.Add(accumulator, (Number)item);
+                    }
+                    return accumulator;
+                }
+        };
+
+        public static NativeLambda Minus = new NativeLambda
+        {
+            Parameters = new List<LambdaParameter>()
+            {
+                new LambdaParameter("value", LispValueType.Number),
+                new LambdaParameter("values", LispValueType.Number, LambdaParameterType.Rest)
+            },
+            Body = parameters =>
+                {
+                    IList<ILispValue> items = ((List)parameters["values"]).CollectProperList();
+                    Number accumulator = (Number)parameters["value"];
+                    if (items.Count == 0)
+                    {
+                        accumulator = Number.Subtract(Lisp.Constant(0), accumulator);
+                    }
+                    else
+                    {
+                        foreach (ILispValue item in items)
+                        {
+                            accumulator = Number.Subtract(accumulator, (Number)item);
+                        }
+                    }
+                    return accumulator;
+                }
+        };
+
+        public static NativeLambda Multiply = new NativeLambda
+        {
+            Parameters = new List<LambdaParameter>()
+            {
+                new LambdaParameter("value", LispValueType.Number),
+                new LambdaParameter("values", LispValueType.Number, LambdaParameterType.Rest)
+            },
+            Body = parameters =>
+                {
+                    IList<ILispValue> items = ((List)parameters["values"]).CollectProperList();
+                    Number accumulator = (Number)parameters["value"];
+                    foreach (ILispValue item in items)
+                    {
+                        accumulator = Number.Multiply(accumulator, (Number)item);
+                    }
+                    return accumulator;
+                }
+        };
+
+        public static NativeLambda Divide = new NativeLambda
+        {
+            Parameters = new List<LambdaParameter>()
+            {
+                new LambdaParameter("value", LispValueType.Number),
+                new LambdaParameter("values", LispValueType.Number, LambdaParameterType.Rest)
+            },
+            Body = parameters =>
+                {
+                    IList<ILispValue> items = ((List)parameters["values"]).CollectProperList();
+                    Number accumulator = (Number)parameters["value"];
+                    if (items.Count == 0)
+                    {
+                        accumulator = Number.Divide(Lisp.Constant(1m), accumulator);
+                    }
+                    else
+                    {
+                        foreach (ILispValue item in items)
+                        {
+                            accumulator = Number.Divide(accumulator, (Number)item);
+                        }
+                    }
+                    return accumulator;
+                }
+        };
+
+        public static NativeLambda Increment = new NativeLambda
+        {
+            Parameters = new List<LambdaParameter>() { new LambdaParameter("value", LispValueType.Number) },
+            Body = parameters => Number.Add((Number)parameters["value"], Lisp.Constant(1))
+        };
+
+        public static NativeLambda Decrement = new NativeLambda
+        {
+            Parameters = new List<LambdaParameter>() { new LambdaParameter("value", LispValueType.Number) },
+            Body = parameters => Number.Subtract((Number)parameters["value"], Lisp.Constant(1))
         };
 
         #endregion
@@ -185,11 +302,11 @@ namespace TiaLisp.Execution
             Parameters = new List<LambdaParameter>() { new LambdaParameter("length", LispValueType.Number), new LambdaParameter("char", LispValueType.Char, LambdaParameterType.Optional) },
             Body = parameters =>
                 {
-                    if (!(parameters["length"] is Integer))
+                    if (!(parameters["length"] is Number) || !((Number)parameters["length"]).IsInteger)
                     {
                         throw new LispException("length must be an integer");
                     }
-                    long length = ((Integer)parameters["length"]).Value;
+                    long length = (long)((Number)parameters["length"]).Value;
                     if (length < 0 || length > Int32.MaxValue)
                         throw new LispException("invalid string length: " + length.ToString());
                     char c = ((Character)parameters["char"]).Value;
@@ -203,7 +320,7 @@ namespace TiaLisp.Execution
             Body = parameters =>
                 {
                     string s = ((TiaLisp.Values.String)parameters["string"]).Value;
-                    return new TiaLisp.Values.Integer(s.Length);
+                    return new TiaLisp.Values.Number(s.Length);
                 }
         };
 
@@ -213,11 +330,11 @@ namespace TiaLisp.Execution
             Body = parameters =>
                 {
                     string s = ((TiaLisp.Values.String)parameters["string"]).Value;
-                    if (!(parameters["index"] is Integer))
+                    if (!(parameters["index"] is Number) || !((Number)parameters["index"]).IsInteger)
                     {
                         throw new LispException("index must be an integer");
                     }
-                    long index = ((Integer)parameters["index"]).Value;
+                    long index = (long)((Number)parameters["index"]).Value;
                     if (index < 0 || index >= s.Length)
                         throw new LispException("invalid index " + index.ToString() + " to string: " + parameters["string"].ToString());
                     return new Character(s[(int)index]);

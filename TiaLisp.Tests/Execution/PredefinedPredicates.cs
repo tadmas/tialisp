@@ -74,7 +74,6 @@ namespace TiaLisp.Tests.Execution
         public void NumberP()
         {
             LispAssert.EvaluatesTo(Lisp.Constant(true), Lisp.List(Lisp.Symbol("number?"), Lisp.Constant(5)));
-            LispAssert.EvaluatesTo(Lisp.Constant(true), Lisp.List(Lisp.Symbol("number?"), Lisp.Constant(0.3)));
             LispAssert.EvaluatesTo(Lisp.Constant(true), Lisp.List(Lisp.Symbol("number?"), Lisp.Constant(9.95m)));
 
             LispAssert.EvaluatesTo(Lisp.Constant(false), Lisp.List(Lisp.Symbol("number?"), Lisp.Constant(true)));
